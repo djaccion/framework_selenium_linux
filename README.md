@@ -57,6 +57,30 @@ Con reporte HTML:
 python3 -m pytest --html=reportes/reporte.html --self-contained-html
 ```
 
+### Informe visual paso a paso
+
+Cada ejecución deja un informe HTML **autocontenido** en `reportes/` con la captura de
+cada acción del navegador —navegar, escribir, hacer clic— junto al rótulo del elemento
+y la URL resultante. El paso donde falla queda marcado en rojo.
+
+Se genera solo, sin argumentos extra:
+
+```bash
+pytest tests/test_busqueda_commons.py
+# Informe de la ejecución: reportes/informe-test_portada_carga_con_titulo.html
+```
+
+Como las imágenes van embebidas, el archivo se puede adjuntar a un ticket o publicar
+como artefacto del pipeline sin arrastrar la carpeta de evidencias. Contrapartida: pesa
+del orden de 200 KB por paso.
+
+Se apaga cuando no hace falta:
+
+```bash
+AUTOMATION_PASOS=false pytest          # sin capturas por paso
+AUTOMATION_PASOS_MAX=10 pytest         # solo los primeros 10 pasos
+```
+
 ## 5. Configuración (variables de entorno)
 
 Ninguna credencial vive en el código.
@@ -72,6 +96,9 @@ Ninguna credencial vive en el código.
 | `AUTOMATION_USER` / `AUTOMATION_PASSWORD` | vacío | Credenciales de prueba |
 | `AUTOMATION_CHROME_BIN` | vacío | Ruta del navegador, si no está en el PATH |
 | `AUTOMATION_CHROMEDRIVER` | vacío | Ruta del driver, si no se quiere Selenium Manager |
+| `AUTOMATION_PASOS` | `true` | Captura una imagen por acción del navegador |
+| `AUTOMATION_PASOS_MAX` | `40` | Tope de capturas por caso |
+| `AUTOMATION_REPORTES` | `reportes` | Carpeta donde se deja el informe |
 
 Ejemplo:
 
