@@ -1,6 +1,8 @@
 import pytest
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+import unicodedata
+from urllib.parse import urlparse, unquote
 
 # ---- PageObjects ----
 
@@ -50,6 +52,11 @@ def test_busqueda_chile(driver):
     link_carrera = driver.find_element(By.ID, "mwAtw")
     link_carrera.click()
     # 9. Verifica llegamos a su biografía
-    assert "Jose_Miguel_Carrera".lower().replace(" ", "_") in driver.current_url.lower()
+    # --- Corrección: normalizar URL para quitar acentos antes de comparar ---
+    url_path = urlparse(driver.current_url).path  # /wiki/Jos%C3%A9_Miguel_Carrera
+    url_path_unquoted = unquote(url_path)         # /wiki/José_Miguel_Carrera
+    def sin_acentos(txt):
+        return ''.join(c for c in unicodedata.normalize('NFD', txt) if unicodedata.category(c) != 'Mn')
+    assert "Jose_Miguel_Carrera" in sin_acentos(url_path_unquoted), "No se llegó al artículo de José Miguel Carrera"
 
     # 10. REVISAR: aserción sobre contenido, si hiciera falta aquí (por defecto, URL concreta)
