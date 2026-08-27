@@ -1,0 +1,780 @@
+﻿"TCID","Summary","Description","Test Type","Priority","Labels","Precondition","Folder","Action","Data","Result"
+"WIKI-01","Búsqueda: encontrar un artículo existente por su título exacto","Objetivo
+
+Verificar el camino principal del buscador: un término que corresponde a un artículo publicado debe llevar a ese artículo. Es el flujo de mayor tráfico del sitio y el que más usuarios encuentran primero; si falla, todo lo demás es irrelevante.
+
+Alcance
+
+Incluye
+
+- El autocompletado responde mientras se escribe.
+- La búsqueda completa (botón «Buscar»), no el salto directo de la sugerencia.
+- La identidad del artículo de destino: encabezado, título de pestaña y URL.
+
+No incluye
+
+- La relevancia del orden de los resultados.
+- La búsqueda de texto completo dentro del artículo.
+- El comportamiento en móvil, cubierto por otra suite.
+
+Datos de prueba
+
+- Término de búsqueda: Chile
+- URL de partida: https://es.wikipedia.org
+- URL esperada: https://es.wikipedia.org/wiki/Chile
+- Título de pestaña esperado: «Chile - Wikipedia, la enciclopedia libre»
+
+Criterios de aceptación
+
+- La URL final es exactamente /wiki/Chile, sin redirección a desambiguación.
+- El encabezado principal dice «Chile».
+- El artículo carga con contenido: primer párrafo y ficha lateral del país.
+- El autocompletado ofrece sugerencias en menos de 2 segundos.
+
+Notas para la automatización
+
+- No hacer clic en la sugerencia: eso ejercita el autocompletado, no la búsqueda. Para validar la búsqueda hay que usar el botón «Buscar».
+- Esperar por la URL o por el encabezado, nunca por un tiempo fijo.","Manual","High","busqueda;camino-feliz;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Busqueda","PRECONDICIÓN: navegador en estado limpio, sin sesión iniciada en Wikipedia.
+Abrir la edición en español.","https://es.wikipedia.org","Carga la portada «Bienvenidos a Wikipedia» en menos de 5 segundos. La cabecera muestra el campo «Buscar en Wikipedia» y el contador con la cantidad de artículos en español."
+"WIKI-01","","","","","","","","Verificar el estado inicial del buscador antes de escribir.","","El campo está vacío, muestra el texto de ayuda «Buscar en Wikipedia» y no hay ninguna lista de sugerencias desplegada."
+"WIKI-01","","","","","","","","Hacer clic en el campo de búsqueda para darle el foco.","","El campo queda enfocado, con el cursor de texto visible y el borde resaltado."
+"WIKI-01","","","","","","","","Escribir el término de búsqueda exacto. No pulsar Enter todavía.","Chile","El campo muestra «Chile» tal como se escribió y, en menos de 2 segundos, se despliega la lista de sugerencias."
+"WIKI-01","","","","","","","","Revisar el contenido de las sugerencias ofrecidas.","","La primera sugerencia es «Chile». Cada entrada muestra el título del artículo y una descripción breve, y todas contienen el texto escrito."
+"WIKI-01","","","","","","","","Pulsar el botón «Buscar» SIN seleccionar ninguna sugerencia, para ejercitar la búsqueda completa y no el salto directo del autocompletado.","","El navegador cambia de página y la URL resultante es https://es.wikipedia.org/wiki/Chile"
+"WIKI-01","","","","","","","","Verificar la identidad del artículo abierto.","","El encabezado principal (h1) dice exactamente «Chile» y el título de la pestaña del navegador es «Chile - Wikipedia, la enciclopedia libre»."
+"WIKI-01","","","","","","","","Verificar que el artículo trae contenido real y no es una página de desambiguación.","","Se muestra el primer párrafo introductorio y la ficha lateral del país con campos como capital, población y superficie. NO aparece el aviso «puede referirse a»."
+"WIKI-01","","","","","","","","Verificar que la página quedó operativa para seguir trabajando.","","La tabla de contenidos está presente en la columna izquierda, el artículo permite desplazarse hasta el final y la consola del navegador no registra errores."
+"WIKI-02","Búsqueda: término sin resultados muestra aviso, no un error","Objetivo
+
+Verificar que la ausencia de resultados se resuelve como un caso de negocio y no como un fallo técnico. Es la diferencia entre un sistema que acompaña al usuario y uno que lo deja frente a una página rota.
+
+Alcance
+
+Incluye
+
+- El mensaje que se muestra cuando no hay coincidencias.
+- Las alternativas ofrecidas al usuario.
+- Que la página conserve cabecera, menú y pie.
+
+No incluye
+
+- La corrección ortográfica y las sugerencias de «quizás quiso decir».
+- La búsqueda en otros proyectos de Wikimedia.
+
+Datos de prueba
+
+- Término sin resultados: zzqxwv123noexiste
+- URL de partida: https://es.wikipedia.org
+- Destino esperado: la página de resultados (Especial:Buscar)
+
+Criterios de aceptación
+
+- Se abre la página de resultados, no un artículo ni una página de error.
+- Hay un aviso legible indicando que no hay coincidencias, y menciona el término.
+- Se ofrece crear la página o repetir la búsqueda en el texto completo.
+- No hay código HTTP 4xx ni 5xx, ni traza de error, ni página en blanco.
+- El término escrito se conserva en el campo para poder corregirlo.
+
+Notas para la automatización
+
+- El término tiene que ser claramente inexistente y estable en el tiempo. Una palabra real puede convertirse en artículo y volver este caso inestable.
+- Verificar el código de respuesta HTTP, no solo lo que se ve en pantalla.","Manual","Medium","busqueda;caso-negativo;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Busqueda","PRECONDICIÓN: navegador sin sesión iniciada.
+Abrir la edición en español.","https://es.wikipedia.org","Carga la portada con el buscador disponible en la cabecera."
+"WIKI-02","","","","","","","","Hacer clic en el campo de búsqueda y escribir una cadena que con certeza no corresponde a ningún artículo.","zzqxwv123noexiste","El campo acepta el texto completo, sin recortarlo ni autocorregirlo."
+"WIKI-02","","","","","","","","Observar el comportamiento del autocompletado.","","No se despliegan sugerencias, o se indica que no hay coincidencias. No queda un indicador de carga girando de forma indefinida."
+"WIKI-02","","","","","","","","Confirmar la búsqueda pulsando el botón «Buscar».","","Se abre la página de resultados (Especial:Buscar). No se abre un artículo ni una página de error."
+"WIKI-02","","","","","","","","Leer el mensaje principal que el sistema le muestra al usuario.","","Aparece un aviso legible indicando que no hay resultados que coincidan con la consulta, y el mensaje menciona el término buscado."
+"WIKI-02","","","","","","","","Verificar que el sistema le ofrece salidas al usuario en vez de dejarlo en un callejón sin salida.","","Se ofrece crear la página con ese título, repetir la búsqueda en el texto completo y buscar en otros proyectos de Wikimedia."
+"WIKI-02","","","","","","","","CRITERIO CENTRAL DEL CASO: verificar que «sin resultados» se resolvió como un caso de negocio y no como un fallo técnico.","","No hay código de error HTTP 4xx ni 5xx, ni traza de error, ni página en blanco. La cabecera, el menú lateral y el pie siguen renderizados con normalidad."
+"WIKI-02","","","","","","","","Verificar que el término se conserva para permitir la corrección.","","El campo de búsqueda mantiene «zzqxwv123noexiste», de modo que el usuario puede editarlo sin volver a escribirlo desde cero."
+"WIKI-03","Navegación: el logo devuelve a la portada desde un artículo","Objetivo
+
+Verificar el punto de retorno universal del sitio. Es la salida que todo usuario asume disponible cuando se pierde, y por ser un elemento de plantilla suele romperse en rediseños sin que nadie lo note.
+
+Alcance
+
+Incluye
+
+- Que el logo sea un enlace y no una imagen decorativa.
+- El destino de la navegación y el contenido de la portada.
+- Que la navegación quede registrada en el historial del navegador.
+
+No incluye
+
+- El contenido editorial concreto de la portada, que cambia a diario.
+- El comportamiento del logo en la propia portada.
+
+Datos de prueba
+
+- Artículo de partida: https://es.wikipedia.org/wiki/Chile
+- URL esperada: https://es.wikipedia.org/wiki/Wikipedia:Portada
+
+Criterios de aceptación
+
+- El clic navega en la misma pestaña, sin abrir ventana nueva.
+- La URL final es /wiki/Wikipedia:Portada.
+- Se muestran «Bienvenidos a Wikipedia» y las secciones de la portada.
+- El botón «atrás» regresa al artículo de origen.
+
+Notas para la automatización
+
+- El logo es un elemento de plantilla: conviene localizarlo por su rol de enlace y no por una clase CSS, que cambia con cada rediseño de la piel.","Manual","Low","navegacion;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Navegacion","PRECONDICIÓN: estar dentro de un artículo, no en la portada.
+Abrir directamente el artículo de referencia.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo «Chile» con su contenido cargado."
+"WIKI-03","","","","","","","","Verificar que el logo de Wikipedia está presente en la esquina superior izquierda.","","El logo es visible junto al texto «WIKIPEDIA · La enciclopedia libre»."
+"WIKI-03","","","","","","","","Posar el cursor sobre el logo para confirmar que es un enlace y no una imagen decorativa.","","El puntero cambia a la forma de mano y el navegador anuncia el destino del enlace en la barra de estado."
+"WIKI-03","","","","","","","","Hacer clic en el logo.","","El navegador inicia la navegación en la misma pestaña, sin abrir una ventana nueva."
+"WIKI-03","","","","","","","","Verificar la URL de destino.","","La URL es https://es.wikipedia.org/wiki/Wikipedia:Portada"
+"WIKI-03","","","","","","","","Verificar el contenido de la página de destino.","","Se muestra «Bienvenidos a Wikipedia» junto con las secciones «Artículo destacado», «Actualidad», «Efemérides» y «Recurso del día»."
+"WIKI-03","","","","","","","","Verificar que la navegación quedó registrada en el historial del navegador.","","El botón «atrás» está habilitado y al usarlo se regresa al artículo «Chile»."
+"WIKI-04","Navegación: seguir un enlace interno y volver con el botón atrás","Objetivo
+
+Verificar la navegación entre artículos, que es el mecanismo central de una enciclopedia hipertextual, junto con el retorno al punto de lectura. Un salto que no permite volver rompe la forma en que la gente realmente lee Wikipedia.
+
+Alcance
+
+Incluye
+
+- La vista previa emergente al posar el cursor sobre el enlace.
+- La navegación al artículo de destino y su carga completa.
+- El retorno con el botón «atrás» y la posición de lectura.
+
+No incluye
+
+- Los enlaces externos y los enlaces a otros proyectos.
+- Los enlaces rojos, que apuntan a artículos inexistentes.
+
+Datos de prueba
+
+- Artículo de partida: https://es.wikipedia.org/wiki/Chile
+- Enlace a seguir (primer párrafo): Santiago
+- Destino esperado: /wiki/Santiago_de_Chile o /wiki/Santiago
+
+Criterios de aceptación
+
+- El enlace se muestra en azul, indicando que el destino existe.
+- La navegación ocurre en la misma pestaña.
+- El artículo de destino carga con párrafo, tabla de contenidos y ficha.
+- «Atrás» devuelve al artículo original y restaura la posición de lectura.
+- El enlace ya visitado se muestra en un tono distinto.
+
+Notas para la automatización
+
+- El destino puede variar entre /wiki/Santiago y /wiki/Santiago_de_Chile según cómo esté enlazado el artículo. Aceptar ambos o anclar la aserción al encabezado en vez de a la URL.","Manual","Medium","navegacion;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Navegacion","PRECONDICIÓN: artículo de partida que contenga enlaces internos en su primer párrafo.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo «Chile» y el primer párrafo contiene varios enlaces en azul."
+"WIKI-04","","","","","","","","Identificar en el primer párrafo un enlace interno hacia otro artículo.","Santiago","El enlace aparece en AZUL, lo que indica que el artículo de destino existe. Un enlace rojo señalaría un artículo inexistente y no serviría para este caso."
+"WIKI-04","","","","","","","","Posar el cursor sobre el enlace sin hacer clic.","","Se muestra una vista previa emergente con el resumen y la imagen del artículo de destino."
+"WIKI-04","","","","","","","","Hacer clic en el enlace.","","La navegación ocurre en la misma pestaña, sin abrir una ventana nueva."
+"WIKI-04","","","","","","","","Verificar la URL y el encabezado del artículo de destino.","","La URL corresponde al artículo enlazado (/wiki/Santiago_de_Chile o /wiki/Santiago) y el encabezado principal coincide con ese artículo."
+"WIKI-04","","","","","","","","Verificar que el artículo de destino cargó completo.","","Se muestran el primer párrafo, la tabla de contenidos y la ficha lateral. NO aparece el mensaje «Wikipedia no tiene un artículo con ese nombre»."
+"WIKI-04","","","","","","","","Volver atrás con el botón del navegador.","","Se regresa al artículo «Chile»."
+"WIKI-04","","","","","","","","Verificar que se conservó el contexto de lectura.","","El navegador restaura la posición de desplazamiento previa y el enlace ya visitado se muestra en un tono distinto."
+"WIKI-05","Contenido: consultar el historial de revisiones de un artículo","Objetivo
+
+Verificar la trazabilidad editorial: quién cambió qué y cuándo. Es el mecanismo que sostiene la confianza en un contenido que cualquiera puede editar, y el que permite revertir vandalismo.
+
+Alcance
+
+Incluye
+
+- El acceso al historial desde el artículo.
+- Los datos de cada revisión: fecha, autor, tamaño y diferencia.
+- La comparación entre dos versiones y la consulta de una revisión antigua.
+
+No incluye
+
+- Revertir o deshacer ediciones, que exige sesión iniciada y permisos.
+- El filtrado por autor o por rango de fechas.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Ruta esperada: index.php?title=Chile&action=history
+
+Criterios de aceptación
+
+- Las revisiones se listan de la más reciente a la más antigua.
+- Cada revisión muestra fecha y hora, autor o IP, tamaño y diferencia.
+- Existen los enlaces «actual» y «previo» y los selectores de comparación.
+- La comparación resalta el texto añadido y el eliminado.
+- Una revisión antigua se abre con el aviso de que no es la versión vigente.
+
+Notas para la automatización
+
+- El contenido del historial cambia cada vez que alguien edita. Validar la ESTRUCTURA (que haya filas, que traigan fecha y autor), nunca una revisión concreta ni un número de revisiones.","Manual","Medium","contenido;regresion;trazabilidad;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Contenido del articulo","PRECONDICIÓN: artículo con múltiples ediciones registradas a lo largo del tiempo.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo con las pestañas «Leer», «Ver código fuente» y «Ver historial» en la parte superior."
+"WIKI-05","","","","","","","","Abrir la pestaña «Ver historial».","","La URL incluye el parámetro action=history y el título de la página es «Chile: historial de revisiones»."
+"WIKI-05","","","","","","","","Verificar la estructura general del listado de revisiones.","","Se listan revisiones ordenadas de la más reciente a la más antigua, con controles para elegir cuántas mostrar (50, 100, 250, 500)."
+"WIKI-05","","","","","","","","Verificar los datos que acompañan a cada revisión.","","Cada línea muestra fecha y hora, el nombre de usuario o la dirección IP del autor, el tamaño del artículo en bytes y la diferencia de tamaño respecto de la revisión anterior."
+"WIKI-05","","","","","","","","Verificar los controles de comparación disponibles.","","Cada revisión ofrece los enlaces «actual» y «previo», y hay dos columnas de selectores para comparar dos versiones cualesquiera."
+"WIKI-05","","","","","","","","Seleccionar dos revisiones consecutivas y pulsar «Comparar las versiones seleccionadas».","","Se abre la vista de diferencias, con el texto eliminado y el añadido resaltados en columnas contrapuestas."
+"WIKI-05","","","","","","","","Abrir una revisión antigua pulsando su fecha.","","Se muestra el artículo tal como estaba en ese momento, con un aviso de que no es la versión actual."
+"WIKI-05","","","","","","","","Regresar a la versión vigente del artículo.","","La pestaña «Leer» devuelve al artículo actual, sin el aviso de revisión antigua."
+"WIKI-06","Búsqueda: términos con tildes y ñ se codifican bien en la URL","Objetivo
+
+Verificar el manejo de caracteres del español en todo el recorrido: entrada, búsqueda, título y URL. Es la fuente clásica de defectos de codificación, y el punto donde más falsos negativos produce la automatización.
+
+Alcance
+
+Incluye
+
+- Que el campo acepte y conserve los caracteres acentuados.
+- Que el título mostrado conserve las tildes.
+- Que la URL codifique correctamente los caracteres no ASCII.
+- Cobertura de la «ñ» además de la tilde.
+
+No incluye
+
+- Otros alfabetos (cirílico, griego, CJK), cubiertos por otra suite.
+- La búsqueda insensible a acentos («jose» debería encontrar «José»).
+
+Datos de prueba
+
+- Término con tilde: José Miguel Carrera
+- Término con eñe: Ñuble
+- Codificación esperada: é → %C3%A9   ñ → %C3%B1
+- URL esperada: /wiki/Jos%C3%A9_Miguel_Carrera
+
+Criterios de aceptación
+
+- El campo muestra el texto con las tildes intactas, sin sustituciones.
+- El encabezado del artículo conserva la acentuación.
+- La URL aparece codificada en porcentaje y los espacios como guiones bajos.
+- El artículo con «ñ» abre correctamente y codifica la letra como %C3%B1.
+
+Notas para la automatización
+
+- TRAMPA PRINCIPAL: comparar la URL en crudo contra el texto acentuado da un falso negativo. Hay que decodificarla antes de comparar.
+- Asegurar que el archivo de la prueba y la conexión trabajen en UTF-8: una codificación distinta rompe el caso sin que el sitio tenga defecto.","Manual","High","busqueda;i18n;regresion;riesgo-alto;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Busqueda","PRECONDICIÓN: navegador sin sesión iniciada, con soporte de caracteres acentuados en el teclado.","https://es.wikipedia.org","Carga la portada con el buscador disponible."
+"WIKI-06","","","","","","","","Escribir en el buscador un término que contenga tildes.","José Miguel Carrera","El campo muestra el texto con las tildes intactas. No se sustituyen ni se pierden los caracteres acentuados."
+"WIKI-06","","","","","","","","Verificar que el autocompletado maneja correctamente los acentos.","","Se despliegan sugerencias pertinentes al término acentuado, no resultados vacíos."
+"WIKI-06","","","","","","","","Confirmar la búsqueda y abrir el artículo.","","Se abre el artículo correspondiente a José Miguel Carrera."
+"WIKI-06","","","","","","","","Comparar el título mostrado con el término buscado.","","El encabezado principal muestra «José Miguel Carrera», con la tilde en la «e»."
+"WIKI-06","","","","","","","","OBSERVAR LA URL. Este es el punto que más falla al automatizar este flujo.","","La URL aparece codificada: /wiki/Jos%C3%A9_Miguel_Carrera. Los espacios se convierten en guiones bajos y la «é» en %C3%A9."
+"WIKI-06","","","","","","","","Registrar la implicación para la automatización del caso.","","Al validar la URL por programa hay que decodificarla antes de compararla con el texto acentuado. Compararla en crudo contra «José» produce un falso negativo."
+"WIKI-06","","","","","","","","Repetir la búsqueda con la «ñ», el otro carácter conflictivo del español.","Ñuble","El artículo abre correctamente, el título visible conserva la «ñ» y la URL la codifica como %C3%B1."
+"WIKI-07","Contenido: la tabla de contenidos navega y sigue la lectura","Objetivo
+
+Verificar la navegación dentro de un artículo extenso. En textos largos, la tabla de contenidos es la única forma práctica de llegar a una sección, y su sincronización con la lectura es lo que evita que el usuario se pierda.
+
+Alcance
+
+Incluye
+
+- El contenido y la jerarquía de la tabla.
+- El salto a una sección y el ancla en la URL.
+- El resaltado que sigue la sección que se está leyendo.
+
+No incluye
+
+- El plegado de secciones en vista móvil.
+- La corrección del contenido de cada sección.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Sección de destino: Historia
+- Ancla esperada: /wiki/Chile#Historia
+- Ancho mínimo de ventana: 1280 px
+
+Criterios de aceptación
+
+- La tabla lista las secciones en el mismo orden del cuerpo, con jerarquía.
+- El clic desplaza hasta el encabezado, que queda visible.
+- La URL incorpora el ancla de la sección.
+- La entrada queda resaltada en la tabla.
+- Al desplazarse manualmente, el resaltado se actualiza solo.
+
+Notas para la automatización
+
+- Por debajo de 1280 px la tabla se colapsa en un botón y el caso falla sin que haya defecto. Fijar el tamaño de ventana de forma explícita en el script.
+- El desplazamiento es animado: esperar a que el encabezado esté visible, no a que exista en el DOM.","Manual","Medium","contenido;navegacion;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol | Vista de escritorio con la interfaz Vector 2022 completa","/Wikipedia/Contenido del articulo","PRECONDICIÓN: artículo extenso con varias secciones y subsecciones, abierto en una ventana de escritorio lo bastante ancha para que la tabla de contenidos se muestre en la columna izquierda.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo con la tabla de contenidos visible en la columna izquierda."
+"WIKI-07","","","","","","","","Verificar el contenido de la tabla de contenidos.","","Lista las secciones del artículo en el mismo orden en que aparecen en el cuerpo, con jerarquía visual entre secciones y subsecciones."
+"WIKI-07","","","","","","","","Verificar el comportamiento de las secciones que tienen subsecciones.","","Muestran un control para desplegarlas y contraerlas, y al accionarlo las subsecciones aparecen y desaparecen."
+"WIKI-07","","","","","","","","Hacer clic en una sección concreta de la tabla.","Historia","La página se desplaza hasta el encabezado «Historia», que queda visible en la parte superior del área de lectura."
+"WIKI-07","","","","","","","","Verificar la sincronización entre la tabla y la posición de lectura.","","La entrada «Historia» queda resaltada en la tabla de contenidos, señalando la sección en la que se encuentra el lector."
+"WIKI-07","","","","","","","","Verificar la URL después del salto de sección.","","La URL incorpora el ancla de la sección: /wiki/Chile#Historia"
+"WIKI-07","","","","","","","","Desplazarse manualmente con la rueda del ratón hasta otra sección del artículo.","","El resaltado de la tabla de contenidos se actualiza solo, siguiendo la sección que se está leyendo."
+"WIKI-08","Navegación: artículo aleatorio válido y distinto en cada intento","Objetivo
+
+Verificar la función de descubrimiento. Su valor no está en a dónde lleva sino en que lleve a algo válido y distinto cada vez; es también el caso que mejor enseña a no fijar aserciones sobre contenido variable.
+
+Alcance
+
+Incluye
+
+- El acceso a la función desde el menú principal.
+- Que el destino sea un artículo del espacio principal, con contenido.
+- Que dos invocaciones den artículos distintos.
+
+No incluye
+
+- La distribución estadística de la aleatoriedad.
+- El filtrado por categoría o por calidad del artículo.
+
+Datos de prueba
+
+- URL de partida: https://es.wikipedia.org
+- Opción del menú: Página aleatoria
+- Invocaciones: 2, para poder compararlas
+
+Criterios de aceptación
+
+- La URL empieza por /wiki/ y no es una página especial ni la portada.
+- Hay encabezado con título y al menos un párrafo de contenido.
+- El segundo artículo obtenido es distinto del primero.
+
+Notas para la automatización
+
+- NUNCA fijar un título esperado: el resultado cambia en cada ejecución. Este caso valida la FORMA del resultado, no su contenido.
+- Existe una posibilidad remota de obtener el mismo artículo dos veces. Si se quiere descartar del todo, comparar tres invocaciones.","Manual","Low","exploratorio;navegacion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Navegacion","PRECONDICIÓN: navegador sin sesión iniciada.
+Abrir la edición en español.","https://es.wikipedia.org","Carga la portada."
+"WIKI-08","","","","","","","","Abrir el menú principal de navegación.","","Se despliega el menú lateral con las opciones «Portada», «Portal de la comunidad», «Actualidad», «Cambios recientes» y «Página aleatoria»."
+"WIKI-08","","","","","","","","Pulsar la opción de página aleatoria.","Página aleatoria","El navegador redirige a un artículo del espacio principal."
+"WIKI-08","","","","","","","","Verificar que el destino es un artículo válido.","","La URL empieza por https://es.wikipedia.org/wiki/ y no es Wikipedia:Portada ni una página especial. Hay un encabezado con título y al menos un párrafo de contenido."
+"WIKI-08","","","","","","","","Anotar el título del artículo obtenido.","","El título queda registrado para poder compararlo en el paso siguiente."
+"WIKI-08","","","","","","","","Repetir la operación de página aleatoria.","Página aleatoria","Se abre un artículo DISTINTO del anterior. Esto es lo único que confirma que la selección es realmente aleatoria y no un destino fijo."
+"WIKI-08","","","","","","","","NOTA PARA LA AUTOMATIZACIÓN: no fijar un título esperado.","","El caso valida la FORMA del resultado (es un artículo, tiene título, tiene contenido, cambia entre invocaciones), nunca un contenido concreto. Un script que espere un artículo específico va a fallar de forma intermitente."
+"WIKI-09","Internacionalización: cambiar de idioma conservando el artículo","Objetivo
+
+Verificar que el cambio de idioma preserva el TEMA y no solo traduce la interfaz. El error habitual en este flujo es aterrizar en la portada del otro idioma, perdiendo lo que el usuario estaba leyendo.
+
+Alcance
+
+Incluye
+
+- El selector de idiomas y la cantidad de versiones disponibles.
+- El cambio de dominio y la conservación del artículo.
+- Que el contenido y la interfaz queden en el idioma elegido.
+- El camino de vuelta al idioma original.
+
+No incluye
+
+- La calidad o la equivalencia del contenido entre idiomas.
+- Los idiomas con escritura de derecha a izquierda.
+
+Datos de prueba
+
+- Artículo de partida: https://es.wikipedia.org/wiki/Chile
+- Idioma de destino: English
+- URL esperada: https://en.wikipedia.org/wiki/Chile
+
+Criterios de aceptación
+
+- El selector indica una cantidad de idiomas mayor que cero.
+- La navegación va a en.wikipedia.org conservando el artículo.
+- El encabezado muestra «Chile» y el contenido está en inglés.
+- La interfaz aparece en inglés («Read», «Edit», «View history»).
+- El selector del artículo en inglés ofrece «Español» para volver.
+
+Notas para la automatización
+
+- El caso cruza dos dominios distintos. En redes corporativas es habitual que el proxy permita una edición de Wikipedia y bloquee las demás: ese bloqueo se manifiesta como fallo del caso sin que haya defecto.
+- El nombre del artículo puede no coincidir entre idiomas. «Chile» sirve porque es idéntico; con otros temas hay que anclar la aserción de otra forma.","Manual","High","i18n;navegacion;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol | Acceso a las ediciones en espanol e ingles de Wikipedia","/Wikipedia/Preferencias e idioma","PRECONDICIÓN: artículo que exista publicado en varios idiomas.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo y en la cabecera aparece el selector de idiomas con el número de versiones disponibles."
+"WIKI-09","","","","","","","","Verificar el estado del selector antes de usarlo.","","El selector indica una cantidad de idiomas mayor que cero."
+"WIKI-09","","","","","","","","Abrir el selector de idiomas.","","Se despliega la lista de idiomas disponibles, cada uno con su nombre en su propio idioma, junto a un campo para filtrar."
+"WIKI-09","","","","","","","","Elegir el idioma inglés.","English","El navegador navega al dominio en.wikipedia.org."
+"WIKI-09","","","","","","","","Verificar que se conservó el TEMA del artículo, no solo el idioma del sitio.","","La URL es https://en.wikipedia.org/wiki/Chile y el encabezado principal muestra «Chile». No se aterriza en la portada en inglés."
+"WIKI-09","","","","","","","","Verificar que el contenido está efectivamente en el idioma elegido.","","El cuerpo del artículo y la interfaz («Read», «Edit», «View history») están en inglés."
+"WIKI-09","","","","","","","","Verificar que existe el camino de vuelta.","","El selector de idiomas del artículo en inglés ofrece «Español» y permite regresar a la versión original."
+"WIKI-10","Apariencia: el tamaño de texto cambia y la preferencia persiste","Objetivo
+
+Verificar una opción de accesibilidad de uso real: quien necesita letra más grande la necesita en cada visita, no solo en la actual. Por eso el caso no termina en el cambio sino en su persistencia.
+
+Alcance
+
+Incluye
+
+- El estado inicial de la preferencia.
+- El efecto visible sobre el cuerpo del artículo.
+- Que la maquetación no se rompa con la letra mayor.
+- La persistencia tras recargar la página.
+
+No incluye
+
+- El zoom del navegador, que es un mecanismo distinto.
+- Las opciones de anchura y de color del mismo panel.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Valor inicial: Estándar
+- Valor a aplicar: Grande
+- Valor a restituir al terminar: Estándar
+- Ancho mínimo de ventana: 1280 px
+
+Criterios de aceptación
+
+- Al inicio está seleccionada la opción «Estándar».
+- Tras elegir «Grande», el texto se muestra con letra visiblemente mayor.
+- Títulos, ficha lateral y tabla de contenidos siguen legibles y alineados, sin texto cortado ni superpuesto.
+- Tras recargar, «Grande» sigue aplicado y marcado.
+- Al finalizar, la preferencia queda restituida en «Estándar».
+
+Notas para la automatización
+
+- La preferencia se guarda en el navegador y SOBREVIVE a la ejecución. Si el caso no restituye el valor, contamina a los demás casos de la suite.
+- El panel «Apariencia» no se muestra en ventanas angostas.","Manual","Medium","accesibilidad;preferencias;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol | Vista de escritorio con la interfaz Vector 2022 completa","/Wikipedia/Preferencias e idioma","PRECONDICIÓN: artículo abierto en una ventana de escritorio lo bastante ancha para que se muestre el panel «Apariencia» en la columna derecha.","https://es.wikipedia.org/wiki/Chile","Se ve el panel «Apariencia» con los grupos «Tamaño del texto», «Anchura» y «Color»."
+"WIKI-10","","","","","","","","Registrar el estado inicial de la preferencia.","","En «Tamaño del texto» está seleccionada la opción «Estándar»."
+"WIKI-10","","","","","","","","Tomar una referencia visual del cuerpo del artículo antes del cambio.","","Queda registrado cómo se ve el primer párrafo con el tamaño estándar, para poder compararlo después."
+"WIKI-10","","","","","","","","Seleccionar el tamaño de texto «Grande».","Grande","La opción «Grande» queda marcada y «Estándar» se deselecciona."
+"WIKI-10","","","","","","","","Verificar el efecto sobre el cuerpo del artículo.","","El texto del artículo se muestra con una letra visiblemente mayor que la registrada en el paso 3."
+"WIKI-10","","","","","","","","Verificar que el cambio no rompe la maquetación.","","Los títulos, la ficha lateral y la tabla de contenidos siguen legibles y alineados. No hay texto cortado, superpuesto ni desbordado fuera de su contenedor."
+"WIKI-10","","","","","","","","Recargar la página para comprobar la persistencia de la preferencia.","","Tras recargar, el tamaño «Grande» sigue aplicado y sigue marcado en el panel."
+"WIKI-10","","","","","","","","Restituir el valor original para no dejar el entorno alterado.","Estándar","El texto vuelve al tamaño estándar. Dejar el entorno como estaba evita que este caso contamine la ejecución de los demás."
+"WIKI-11","Portada: la sección Actualidad muestra noticias vigentes","Objetivo
+
+Verificar que la portada se mantiene viva. Una sección de actualidad desactualizada es un defecto de percepción grave: el visitante concluye que el sitio entero está abandonado.
+
+Alcance
+
+Incluye
+
+- La existencia y la estructura de la sección.
+- La vigencia de las fechas mostradas.
+- Que los enlaces lleven a artículos existentes.
+
+No incluye
+
+- La veracidad o la relevancia editorial de cada noticia.
+- Las secciones «Efemérides» y «Recurso del día».
+
+Datos de prueba
+
+- URL: https://es.wikipedia.org
+- Sección: Actualidad
+- Antigüedad máxima aceptable de la noticia más reciente: pocos días
+
+Criterios de aceptación
+
+- La sección existe y es visible sin iniciar sesión.
+- Presenta entradas con fecha y con uno o más enlaces.
+- Las fechas corresponden a días recientes.
+- Los enlaces apuntan a es.wikipedia.org y se muestran en azul.
+- El primer enlace abre un artículo con encabezado y contenido.
+
+Notas para la automatización
+
+- El contenido cambia a diario. Validar la ESTRUCTURA y la VIGENCIA, nunca un titular concreto: fijar uno vuelve el script inestable en 24 horas.
+- La comparación de fechas necesita la fecha del día de ejecución, no una fija.","Manual","Low","contenido;exploratorio;portada;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Contenido del articulo","PRECONDICIÓN: navegador sin sesión iniciada.
+Abrir la edición en español.","https://es.wikipedia.org","Carga la portada completa."
+"WIKI-11","","","","","","","","Ubicar la sección «Actualidad» dentro de la portada.","","La sección existe y es visible sin necesidad de iniciar sesión."
+"WIKI-11","","","","","","","","Verificar la estructura de la sección.","","Presenta una lista de noticias; cada entrada tiene una fecha y uno o más enlaces a artículos relacionados."
+"WIKI-11","","","","","","","","Verificar la vigencia de la información mostrada.","","Las fechas corresponden a días recientes. Contenido de meses anteriores indicaría que la portada no se está actualizando."
+"WIKI-11","","","","","","","","Verificar que los enlaces son internos y apuntan a artículos existentes.","","Los enlaces apuntan a es.wikipedia.org y aparecen en azul, indicando que los artículos existen."
+"WIKI-11","","","","","","","","Abrir el primer enlace de la lista de noticias.","","Se abre el artículo relacionado, con encabezado y contenido. No lleva a una página inexistente ni a un error."
+"WIKI-11","","","","","","","","NOTA PARA LA AUTOMATIZACIÓN: el contenido de esta sección cambia a diario.","","El caso valida la ESTRUCTURA (la sección existe, tiene entradas, tienen fecha, los enlaces funcionan), nunca una noticia concreta. Fijar un titular vuelve el script inestable en 24 horas."
+"WIKI-12","Contenido: las referencias saltan a la cita y permiten volver","Objetivo
+
+Verificar el aparato crítico del artículo: que una cita numerada lleve a su referencia y que exista el camino de vuelta al punto de lectura. Es el mecanismo que permite comprobar de dónde sale cada afirmación; sin él, el contenido no es verificable.
+
+Alcance
+
+Incluye
+
+- El salto desde la cita al bloque de referencias.
+- El resaltado de la referencia de destino.
+- El retorno al punto exacto del texto donde estaba la cita.
+
+No incluye
+
+- La validez o el estado de los enlaces externos de cada referencia.
+- El formato bibliográfico de la cita.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Cita a usar: la primera del cuerpo del artículo
+- Ancla esperada: la URL incorpora #cite_note-…
+
+Criterios de aceptación
+
+- Al pulsar la cita, la página se desplaza hasta la sección «Referencias».
+- La referencia de destino queda resaltada o claramente identificable.
+- La URL incorpora el ancla de la nota.
+- La flecha de retorno devuelve al párrafo donde estaba la cita.
+
+Notas para la automatización
+
+- El número de cita cambia si alguien edita el artículo: hay que tomar la primera disponible, nunca una posición fija como «la nota 14».
+- El salto es una navegación por ancla, no una carga de página: esperar por la visibilidad del destino y no por un evento de carga.","Manual","Medium","contenido;regresion;trazabilidad;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Contenido del articulo","PRECONDICIÓN: artículo con aparato crítico, es decir con citas numeradas en el cuerpo.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo y el cuerpo contiene citas en formato [1], [2], etc."
+"WIKI-12","","","","","","","","Localizar la primera cita numerada del cuerpo del artículo.","","La cita es visible y aparece como un enlace superíndice entre corchetes."
+"WIKI-12","","","","","","","","Pulsar la cita.","","La página se desplaza hasta la sección «Referencias» y la URL incorpora un ancla #cite_note."
+"WIKI-12","","","","","","","","Verificar la referencia de destino.","","La entrada correspondiente queda resaltada o claramente distinguible del resto de la lista."
+"WIKI-12","","","","","","","","Verificar que la referencia trae información utilizable.","","Muestra al menos título o fuente; no es una entrada vacía ni un marcador de error."
+"WIKI-12","","","","","","","","Usar la flecha de retorno de la referencia.","","La página vuelve al párrafo del cuerpo donde estaba la cita, no al principio del artículo."
+"WIKI-13","Navegación: las categorías del pie agrupan artículos relacionados","Objetivo
+
+Verificar la taxonomía del sitio: que un artículo declare sus categorías y que desde ellas se llegue al listado de artículos hermanos. Es la vía de descubrimiento por tema, distinta de la búsqueda por nombre.
+
+Alcance
+
+Incluye
+
+- La presencia del bloque de categorías al pie del artículo.
+- La navegación a la página de una categoría.
+- Que la categoría liste el artículo de origen.
+
+No incluye
+
+- Las categorías ocultas y las de mantenimiento.
+- La corrección editorial de la clasificación.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Destino esperado: una URL bajo /wiki/Categoría:
+
+Criterios de aceptación
+
+- El pie del artículo muestra el bloque «Categorías» con al menos una entrada.
+- Al pulsar una categoría se abre su página, con la URL bajo /wiki/Categoría:.
+- La página de la categoría lista artículos, entre ellos el de origen.
+- El encabezado de la página indica el nombre de la categoría.
+
+Notas para la automatización
+
+- El bloque de categorías está al final del artículo: hay que desplazarse hasta él antes de intentar pulsarlo.
+- El nombre de la categoría lleva tilde en «Categoría»; la URL la codifica.","Manual","Low","navegacion;regresion;taxonomia;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Navegacion","PRECONDICIÓN: artículo publicado y clasificado.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo completo."
+"WIKI-13","","","","","","","","Desplazarse hasta el final del artículo.","","Queda visible el bloque «Categorías» por encima del pie de página."
+"WIKI-13","","","","","","","","Verificar el contenido del bloque.","","Lista al menos una categoría, cada una como enlace."
+"WIKI-13","","","","","","","","Pulsar la primera categoría de la lista.","","Se abre la página de la categoría y la URL contiene /wiki/Categoría: codificado."
+"WIKI-13","","","","","","","","Verificar el contenido de la página de categoría.","","El encabezado muestra el nombre de la categoría y se lista un conjunto de artículos."
+"WIKI-13","","","","","","","","Comprobar la relación de ida y vuelta.","Chile","El artículo de origen aparece entre los listados de esa categoría."
+"WIKI-14","Multimedia: el visor de imágenes abre la ficha y permite cerrarla","Objetivo
+
+Verificar el visor multimedia: que una imagen del artículo se abra en grande con su descripción y su licencia, y que se pueda cerrar volviendo al punto de lectura. La licencia no es un adorno: es el requisito legal para reutilizar la imagen.
+
+Alcance
+
+Incluye
+
+- La apertura del visor desde una imagen del artículo.
+- La presencia de descripción, autoría y licencia.
+- El cierre del visor y el retorno al artículo.
+
+No incluye
+
+- La descarga del archivo original.
+- La navegación entre imágenes dentro del visor.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Imagen: la primera de la ficha lateral
+
+Criterios de aceptación
+
+- Al pulsar la imagen se abre el visor en primer plano, sobre el artículo.
+- El visor muestra la imagen en tamaño grande, su descripción y su licencia.
+- Existe un control de cierre visible.
+- Al cerrar, se vuelve al artículo en la misma posición de lectura.
+
+Notas para la automatización
+
+- El visor es una capa sobre la página, no una navegación: la URL cambia por fragmento y el artículo sigue cargado debajo.
+- La tecla Escape debe cerrarlo igual que el botón; conviene verificar ambos.","Manual","Medium","multimedia;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol | Vista de escritorio con la interfaz Vector 2022 completa","/Wikipedia/Contenido del articulo","PRECONDICIÓN: artículo con imágenes en su ficha lateral.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo con al menos una imagen visible."
+"WIKI-14","","","","","","","","Pulsar la primera imagen de la ficha lateral.","","Se abre el visor multimedia en primer plano, oscureciendo el artículo de fondo."
+"WIKI-14","","","","","","","","Verificar la imagen mostrada.","","Se ve en tamaño mayor que en el artículo y completamente contenida en pantalla."
+"WIKI-14","","","","","","","","Verificar la información que acompaña a la imagen.","","Se muestran descripción, autoría y licencia de uso."
+"WIKI-14","","","","","","","","Cerrar el visor con su control de cierre.","","El visor desaparece y se vuelve al artículo."
+"WIKI-14","","","","","","","","Verificar que se conservó el contexto de lectura.","","El artículo queda en la misma posición en la que estaba antes de abrir el visor."
+"WIKI-15","Contenido: un artículo inexistente ofrece crearlo, no un error","Objetivo
+
+Verificar el tratamiento del contenido que todavía no existe. En una enciclopedia abierta, el vacío es una invitación a colaborar y no un fallo: la diferencia entre ambas lecturas la define esta pantalla.
+
+Alcance
+
+Incluye
+
+- El acceso directo por URL a un artículo que no existe.
+- El mensaje mostrado y las alternativas ofrecidas.
+- Que la respuesta no sea un error técnico.
+
+No incluye
+
+- La creación efectiva del artículo, que exige sesión iniciada.
+- Los títulos inválidos por caracteres no permitidos.
+
+Datos de prueba
+
+- URL directa: https://es.wikipedia.org/wiki/Zzqxwv_Articulo_Inexistente_QA
+- Comportamiento esperado: página de artículo ausente, no error 404 del servidor
+
+Criterios de aceptación
+
+- Se abre una página que indica explícitamente que el artículo no existe.
+- Se ofrece crear el artículo y buscar el título en el contenido del sitio.
+- La cabecera, el menú y el pie siguen renderizados con normalidad.
+- No hay traza de error ni página en blanco.
+
+Notas para la automatización
+
+- El título elegido debe ser improbable y estable en el tiempo: si alguien crea el artículo, el caso empieza a fallar sin que haya defecto.
+- MediaWiki responde a esta situación con código 404 aunque la página sea válida: no hay que asertar 200, sino el contenido mostrado.","Manual","Medium","caso-negativo;contenido;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Contenido del articulo","PRECONDICIÓN: navegador sin sesión iniciada.","https://es.wikipedia.org","Carga la portada."
+"WIKI-15","","","","","","","","Navegar directamente por URL a un título que no corresponde a ningún artículo.","https://es.wikipedia.org/wiki/Zzqxwv_Articulo_Inexistente_QA","Se abre una página del sitio, no una pantalla de error del navegador."
+"WIKI-15","","","","","","","","Leer el mensaje principal.","","Indica de forma explícita que Wikipedia no tiene un artículo con ese nombre."
+"WIKI-15","","","","","","","","Verificar las alternativas que se ofrecen.","","Se ofrece crear la página y buscar el título dentro del contenido del sitio."
+"WIKI-15","","","","","","","","Verificar que la estructura del sitio sigue en pie.","","Cabecera, buscador, menú lateral y pie se muestran con normalidad."
+"WIKI-15","","","","","","","","Verificar que no se filtró un fallo técnico.","","No hay traza de error, ni página en blanco, ni mensaje dirigido a desarrolladores."
+"WIKI-16","Colaboración: la página de discusión es accesible desde el artículo","Objetivo
+
+Verificar el acceso al espacio donde se debate el contenido. Es el lugar donde se resuelven las discrepancias editoriales, y su trazabilidad sostiene la neutralidad de lo que finalmente se publica.
+
+Alcance
+
+Incluye
+
+- El acceso a la discusión desde la pestaña del artículo.
+- La relación entre el título de la discusión y el del artículo.
+- El retorno al artículo.
+
+No incluye
+
+- Publicar o responder en la discusión, que exige sesión.
+- El archivo histórico de discusiones antiguas.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- URL esperada: /wiki/Discusión:Chile (codificada)
+
+Criterios de aceptación
+
+- La pestaña «Discusión» está visible junto al nombre del artículo.
+- Al pulsarla se abre la página de discusión correspondiente.
+- El encabezado incluye el nombre del artículo precedido de «Discusión:».
+- La pestaña del artículo devuelve al contenido.
+
+Notas para la automatización
+
+- La palabra «Discusión» lleva tilde y la URL la codifica como Discusi%C3%B3n: hay que decodificar antes de comparar.
+- Algunos artículos no tienen discusión creada; el de referencia sí la tiene.","Manual","Low","colaboracion;navegacion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol","/Wikipedia/Contenido del articulo","PRECONDICIÓN: artículo con página de discusión existente.","https://es.wikipedia.org/wiki/Chile","Se muestra el artículo con las pestañas «Artículo» y «Discusión»."
+"WIKI-16","","","","","","","","Verificar la presencia de la pestaña de discusión.","","La pestaña «Discusión» es visible y no aparece en rojo."
+"WIKI-16","","","","","","","","Pulsar la pestaña «Discusión».","","La navegación termina en /wiki/Discusión:Chile, con la tilde codificada en la URL."
+"WIKI-16","","","","","","","","Verificar el encabezado de la página abierta.","","Muestra «Discusión:Chile», estableciendo la relación con el artículo."
+"WIKI-16","","","","","","","","Verificar que hay contenido de debate.","","Se muestran secciones de discusión o los avisos de la página; no está vacía ni rota."
+"WIKI-16","","","","","","","","Regresar al artículo con la pestaña correspondiente.","","Se vuelve a /wiki/Chile con el contenido del artículo."
+"WIKI-17","Auditoría: Cambios recientes lista ediciones con autor y fecha","Objetivo
+
+Verificar la vigilancia editorial del sitio: el registro en vivo de todo lo que se está editando. Es el mecanismo que permite detectar vandalismo en minutos y no en semanas.
+
+Alcance
+
+Incluye
+
+- El acceso desde el menú principal.
+- Los datos de cada edición listada.
+- Que la información esté actualizada al momento de la consulta.
+
+No incluye
+
+- Los filtros avanzados y las preferencias de visualización.
+- Revertir ediciones, que exige permisos.
+
+Datos de prueba
+
+- Punto de partida: https://es.wikipedia.org
+- Opción del menú: Cambios recientes
+- Antigüedad esperada de la edición más reciente: minutos
+
+Criterios de aceptación
+
+- La opción existe en el menú principal y abre Especial:CambiosRecientes.
+- Se lista un conjunto de ediciones ordenadas de la más reciente a la más antigua.
+- Cada edición muestra hora, artículo, autor o IP y variación de tamaño.
+- La edición más reciente es de hace minutos, no de días.
+
+Notas para la automatización
+
+- El contenido cambia cada pocos segundos: se valida la ESTRUCTURA y la VIGENCIA, nunca una edición concreta.
+- La comparación de antigüedad necesita la hora del momento de ejecución, no un valor fijo escrito en el script.","Manual","Medium","auditoria;contenido-variable;trazabilidad;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Contenido del articulo","PRECONDICIÓN: navegador sin sesión iniciada.","https://es.wikipedia.org","Carga la portada con el menú principal disponible."
+"WIKI-17","","","","","","","","Abrir el menú principal de navegación.","","Se despliega el menú con la opción «Cambios recientes»."
+"WIKI-17","","","","","","","","Pulsar «Cambios recientes».","Cambios recientes","Se abre Especial:CambiosRecientes."
+"WIKI-17","","","","","","","","Verificar la estructura del listado.","","Se listan ediciones agrupadas por fecha, de la más reciente a la más antigua."
+"WIKI-17","","","","","","","","Verificar los datos de cada edición.","","Cada línea muestra hora, artículo editado, autor o dirección IP y la variación de tamaño."
+"WIKI-17","","","","","","","","Verificar la vigencia del registro.","","La edición más reciente corresponde a hace minutos respecto de la hora de ejecución."
+"WIKI-17","","","","","","","","NOTA PARA LA AUTOMATIZACIÓN: no fijar ninguna edición concreta.","","El caso valida forma y frescura del listado. Asertar sobre un artículo o autor concreto vuelve el script inestable en segundos."
+"WIKI-18","Apariencia: el modo oscuro se aplica y mantiene el texto legible","Objetivo
+
+Verificar el tema oscuro, que para muchas personas no es una preferencia estética sino la condición para leer sin fatiga. El riesgo real no es que no cambie el color, sino que algún elemento quede ilegible al cambiarlo.
+
+Alcance
+
+Incluye
+
+- El cambio de tema desde el panel «Apariencia».
+- El contraste del cuerpo, los títulos y los enlaces.
+- La persistencia de la preferencia tras recargar.
+
+No incluye
+
+- La medición formal de contraste según WCAG.
+- El tema automático según la preferencia del sistema operativo.
+
+Datos de prueba
+
+- Artículo: https://es.wikipedia.org/wiki/Chile
+- Valor inicial: Claro
+- Valor a aplicar: Oscuro
+- Valor a restituir al terminar: Claro
+- Ancho mínimo de ventana: 1280 px
+
+Criterios de aceptación
+
+- El panel «Apariencia» ofrece las opciones de color.
+- Al elegir «Oscuro», el fondo pasa a oscuro y el texto a claro.
+- Títulos, enlaces, ficha lateral y tabla de contenidos siguen legibles.
+- Ningún bloque queda con texto oscuro sobre fondo oscuro.
+- Tras recargar, el tema oscuro sigue aplicado.
+- Al finalizar, la preferencia vuelve a «Claro».
+
+Notas para la automatización
+
+- La preferencia se guarda en el navegador y SOBREVIVE a la ejecución: si el caso no la restituye, contamina a todos los casos que verifican la apariencia por omisión.
+- El fallo interesante no es el color de fondo sino un elemento que no acompañó el cambio: hay que mirar la ficha lateral y los avisos, no solo el cuerpo.","Manual","Medium","accesibilidad;preferencias;regresion;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org | Articulo de referencia «Chile» disponible en la edicion en espanol | Vista de escritorio con la interfaz Vector 2022 completa","/Wikipedia/Preferencias e idioma","PRECONDICIÓN: artículo abierto en ventana de escritorio con el panel «Apariencia» visible.","https://es.wikipedia.org/wiki/Chile","Se ve el panel «Apariencia» con el grupo «Color» y la opción «Claro» seleccionada."
+"WIKI-18","","","","","","","","Registrar el estado inicial del tema.","","El fondo del artículo es claro y el texto oscuro."
+"WIKI-18","","","","","","","","Seleccionar el tema «Oscuro».","Oscuro","La opción queda marcada y el tema cambia sin recargar la página."
+"WIKI-18","","","","","","","","Verificar el cuerpo del artículo.","","El fondo es oscuro y el texto claro, con contraste suficiente para leer con comodidad."
+"WIKI-18","","","","","","","","Verificar los elementos que suelen quedar atrás en el cambio de tema.","","Ficha lateral, tabla de contenidos, avisos y enlaces adoptan el tema. Ningún bloque queda con texto oscuro sobre fondo oscuro."
+"WIKI-18","","","","","","","","Recargar la página para comprobar la persistencia.","","Tras recargar, el tema oscuro sigue aplicado y marcado en el panel."
+"WIKI-18","","","","","","","","Restituir el tema original para no dejar el entorno alterado.","Claro","El artículo vuelve al tema claro."
+"WIKI-19","Accesibilidad: el buscador es operable solo con teclado","Objetivo
+
+Verificar que el flujo principal del sitio se puede completar sin ratón. Quien navega con teclado o con lector de pantalla depende por completo de que el foco sea visible y el orden de tabulación tenga sentido.
+
+Alcance
+
+Incluye
+
+- El desplazamiento del foco con la tecla de tabulación.
+- La visibilidad del indicador de foco en cada parada.
+- El envío de la búsqueda con la tecla Enter.
+- El recorrido de sugerencias con las flechas.
+
+No incluye
+
+- La verificación con lector de pantalla, que es una prueba aparte.
+- Los atajos de teclado propios de MediaWiki.
+
+Datos de prueba
+
+- Punto de partida: https://es.wikipedia.org
+- Término a buscar: Chile
+- Teclas: Tab, flechas arriba/abajo, Enter
+
+Criterios de aceptación
+
+- El foco avanza con Tab siguiendo un orden coherente con la lectura.
+- Cada elemento enfocado muestra un indicador de foco visible.
+- El campo de búsqueda se alcanza en pocas tabulaciones desde el inicio.
+- Enter envía la búsqueda sin necesidad de usar el ratón.
+- Las flechas recorren las sugerencias y Enter selecciona la marcada.
+
+Notas para la automatización
+
+- Es el caso de mayor valor de la tanda y el que más se omite: un sitio puede pasar todas las demás pruebas y ser inutilizable sin ratón.
+- El indicador de foco debe VERSE. Un foco que se mueve sin señal visible equivale a no tener foco para quien no usa ratón.","Manual","High","accesibilidad;busqueda;regresion;riesgo-alto;wikipedia","Entorno base: navegador limpio con acceso a es.wikipedia.org","/Wikipedia/Busqueda","PRECONDICIÓN: navegador sin sesión iniciada y sin foco puesto en ningún elemento.","https://es.wikipedia.org","Carga la portada. Ningún elemento aparece enfocado todavía."
+"WIKI-19","","","","","","","","Pulsar la tecla de tabulación repetidamente y observar el recorrido del foco.","Tab","El foco avanza de elemento en elemento siguiendo un orden coherente con la lectura, sin saltos hacia atrás ni elementos inalcanzables."
+"WIKI-19","","","","","","","","Verificar la señal visible del foco en cada parada.","","Cada elemento enfocado muestra un contorno o resaltado claramente distinguible."
+"WIKI-19","","","","","","","","Continuar tabulando hasta alcanzar el campo de búsqueda.","Tab","El campo de búsqueda recibe el foco en pocas tabulaciones desde el inicio de la página."
+"WIKI-19","","","","","","","","Escribir el término sin usar el ratón.","Chile","El texto se escribe en el campo enfocado y se despliegan las sugerencias."
+"WIKI-19","","","","","","","","Recorrer las sugerencias con las flechas del teclado.","Flecha abajo","La sugerencia marcada cambia y se distingue visualmente de las demás."
+"WIKI-19","","","","","","","","Enviar la búsqueda con la tecla Enter.","Enter","Se navega al artículo o a los resultados sin haber usado el ratón en ningún momento."
